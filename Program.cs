@@ -9,13 +9,21 @@ namespace ChessGame
         {
             Tabuleiro tabuleiro = new Tabuleiro(8, 8);
 
-            
-            tabuleiro.ColocarPeca(new Torre(tabuleiro ,Cor.Preta), new Posicao{ Coluna = 0, Linha = 0 });
-            tabuleiro.ColocarPeca(new Torre(tabuleiro ,Cor.Preta), new Posicao{ Coluna = 7, Linha = 0 });
+            try
+            {
+                tabuleiro.ColocarPeca(new Torre(tabuleiro, Cor.Preta), new Posicao(0, 0));
+                tabuleiro.ColocarPeca(new Rei(tabuleiro, Cor.Branca), new Posicao(4, 5));
+                tabuleiro.ColocarPeca(new Rei(tabuleiro, Cor.Preta), new Posicao(5, 5));
 
-            Tela.ImprimirTabuleiro(tabuleiro);
+                Tela.ImprimirTabuleiro(tabuleiro);
 
-            Console.ReadLine();
+
+            }
+            catch (TabuleiroException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
 
         }
     }
