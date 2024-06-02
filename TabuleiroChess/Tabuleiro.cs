@@ -4,7 +4,7 @@
     {
         public int Linhas { get; set; }
         public int Colunas { get; set; }
-        private Peca[,] _pecas;
+        private Peca[,]? _pecas;
 
         public Tabuleiro(int linhas, int colunas)
         {
@@ -38,6 +38,20 @@
 
             _pecas[pos.Linha, pos.Coluna] = p;
             p.Posicao = pos;
+        }
+
+        public Peca? RetirarPeca(Posicao pos)
+        {
+            if (Peca(pos) == null)
+            {
+                return null;
+            }
+
+            Peca aux = Peca(pos);
+            aux.Posicao = null;
+
+            _pecas[pos.Linha, pos.Coluna] = null;
+            return aux;
         }
 
         public bool PosicaoValida(Posicao pos)
