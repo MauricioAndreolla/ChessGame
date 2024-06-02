@@ -6,10 +6,11 @@ namespace ChessGame.TabuleiroChess
     {
         public Tabuleiro? Tabuleiro { get; private set; }
         public int? Turno { get; private set; }
-        public Cor? JogadorAtual { get; private set; }
+        public Cor JogadorAtual { get; private set; }
         public bool Terminada { get; private set; }
         private HashSet<Peca> _pecas;
         private HashSet<Peca> _capturadas;
+        public bool Xeque { get; private set; }
 
         public PartidaDeXadrez()
         {
@@ -19,10 +20,11 @@ namespace ChessGame.TabuleiroChess
             Terminada = false;
             _pecas = new HashSet<Peca>();
             _capturadas = new HashSet<Peca>();
+            Xeque = false;
             ColocarPecas();
         }
 
-        public void ExecutaMovimento(Posicao origem, Posicao destino)
+        public Peca ExecutaMovimento(Posicao origem, Posicao destino)
         {
             Peca peca = Tabuleiro.RetirarPeca(origem);
             peca.IncrementarMovimentos();
@@ -35,13 +37,29 @@ namespace ChessGame.TabuleiroChess
                 _capturadas.Add(capturada);
             }
 
+
+            return capturada;
+        }
+
+        public void DesfazMovimento(Posicao origem, Posicao destino, Peca pecaCapturada)
+        {
+            Peca p = Tabuleiro.RetirarPeca(destino);
+            p.DecrementarMovimentos();
+
+            if (pecaCapturada != null)
+            {
+                Tabuleiro.ColocarPeca(pecaCapturada, destino);
+                _capturadas.Remove(pecaCapturada);
+            }
+
+            Tabuleiro.ColocarPeca(p, origem);
         }
 
         public HashSet<Peca> PecasCapturadas(Cor cor)
         {
             HashSet<Peca> aux = new();
 
-            foreach(Peca x in _capturadas)
+            foreach (Peca x in _capturadas)
             {
                 if (x.Cor == cor)
                 {
@@ -53,7 +71,7 @@ namespace ChessGame.TabuleiroChess
 
         public HashSet<Peca> PecasEmJogo(Cor cor)
         {
-            HashSet<Peca> aux = new();
+            HashSet<Peca> aux = new HashSet<Peca>();
 
             foreach (Peca x in _capturadas)
             {
@@ -68,7 +86,23 @@ namespace ChessGame.TabuleiroChess
 
         public void RealizaJogada(Posicao origem, Posicao destino)
         {
-            ExecutaMovimento(origem, destino);
+            Peca pecaCapturada = ExecutaMovimento(origem, destino);
+
+            if (EstaEmXeque(JogadorAtual))
+            {
+                DesfazMovimento(origem, destino, pecaCapturada);
+                throw new TabuleiroException("Você não pode entrar em xeque");
+            }
+
+            if (EstaEmXeque(Adversaria(JogadorAtual)))
+            {
+                Xeque = true;
+            }
+            else
+            {
+                Xeque = false;
+            }
+
             Turno++;
             MudaJogador();
         }
@@ -80,7 +114,7 @@ namespace ChessGame.TabuleiroChess
                 throw new TabuleiroException("Não existe peça nessa posição de origem");
             }
 
-            if(JogadorAtual != Tabuleiro.Peca(pos).Cor)
+            if (JogadorAtual != Tabuleiro.Peca(pos).Cor)
             {
                 throw new TabuleiroException("A peça de origem não é sua");
             }
@@ -111,6 +145,52 @@ namespace ChessGame.TabuleiroChess
             }
         }
 
+        private Cor Adversaria(Cor cor)
+        {
+            if (cor == Cor.Branca)
+            {
+                return Cor.Preta;
+            }
+            else
+            {
+                return Cor.Branca;
+            }
+
+        }
+
+        private Peca Rei(Cor cor)
+        {
+            foreach (Peca peca in PecasEmJogo(cor))
+            {
+                if (peca is Rei)
+                {
+                    return peca;
+                }
+            }
+            return null;
+        }
+
+        public bool EstaEmXeque(Cor cor)
+        {
+            Peca rei = Rei(cor);
+
+            if (rei == null)
+            {
+                throw new TabuleiroException($"Não existe rei com a cor {cor}");
+            }
+
+            foreach (Peca peca in PecasEmJogo(Adversaria(cor)))
+            {
+                bool[,] mat = peca.MovimentosPossiveis(); // Verificar
+
+                if (mat[rei.Posicao.Linha, rei.Posicao.Coluna] == true)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public void ColocarNovaPeca(char coluna, int linha, Peca peca)
         {
             Tabuleiro.ColocarPeca(peca, new PosicaoXadrez(coluna, linha).ToPosicao());
@@ -119,14 +199,17 @@ namespace ChessGame.TabuleiroChess
 
         private void ColocarPecas()
         {
+            ColocarNovaPeca('a', 1, new Rei(Tabuleiro, Cor.Branca));
             ColocarNovaPeca('c', 1, new Torre(Tabuleiro, Cor.Branca));
             ColocarNovaPeca('c', 2, new Torre(Tabuleiro, Cor.Branca));
             ColocarNovaPeca('d', 2, new Torre(Tabuleiro, Cor.Branca));
             ColocarNovaPeca('e', 2, new Torre(Tabuleiro, Cor.Branca));
 
+
+            ColocarNovaPeca('g', 6, new Rei(Tabuleiro, Cor.Preta));
             ColocarNovaPeca('c', 7, new Torre(Tabuleiro, Cor.Preta));
             ColocarNovaPeca('e', 8, new Torre(Tabuleiro, Cor.Preta));
-            ColocarNovaPeca('d', 8, new Torre(Tabuleiro, Cor.Preta));
+            ColocarNovaPeca('d', 6, new Torre(Tabuleiro, Cor.Preta));
 
 
         }
