@@ -57,7 +57,7 @@ namespace ChessGame.TabuleiroChess
 
         public HashSet<Peca> PecasCapturadas(Cor cor)
         {
-            HashSet<Peca> aux = new();
+            HashSet<Peca> aux = new HashSet<Peca>();
 
             foreach (Peca x in _capturadas)
             {
@@ -73,7 +73,7 @@ namespace ChessGame.TabuleiroChess
         {
             HashSet<Peca> aux = new HashSet<Peca>();
 
-            foreach (Peca x in _capturadas)
+            foreach (Peca x in _pecas)
             {
                 if (x.Cor == cor)
                 {
