@@ -24,6 +24,41 @@ namespace ChessGame.TabuleiroChess
             ColocarPecas();
         }
 
+        public bool TesteXequeMate(Cor cor)
+        {
+            if (!EstaEmXeque(cor))
+            {
+                return false;
+            }
+
+            foreach (Peca peca in PecasEmJogo(cor))
+            {
+                bool[,] mat = peca.MovimentosPossiveis();
+
+                for (int i = 0; i < Tabuleiro.Linhas; i++)
+                {
+                    for (int j = 0; j < Tabuleiro.Colunas; j++)
+                    {
+                        if (mat[i, j])
+                        {
+                            Posicao origem = peca.Posicao;
+
+                            Posicao destino = new Posicao(i, j);
+                            Peca pecaCapturada = ExecutaMovimento(origem, destino);
+                            bool testeXeque = EstaEmXeque(cor);
+                            DesfazMovimento(origem, destino, pecaCapturada);
+
+                            if (!testeXeque)
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
         public Peca ExecutaMovimento(Posicao origem, Posicao destino)
         {
             Peca peca = Tabuleiro.RetirarPeca(origem);
@@ -103,8 +138,16 @@ namespace ChessGame.TabuleiroChess
                 Xeque = false;
             }
 
-            Turno++;
-            MudaJogador();
+            if (TesteXequeMate(Adversaria(JogadorAtual)))
+            {
+                Terminada = true;
+            }
+            else
+            {
+                Turno++;
+                MudaJogador();
+            }
+
         }
 
         public void ValidarPosicaoDeOrigem(Posicao pos)
@@ -127,7 +170,7 @@ namespace ChessGame.TabuleiroChess
 
         public void ValidarPosicaoDeDestino(Posicao origem, Posicao destino)
         {
-            if (!Tabuleiro.Peca(origem).PodeMoverPara(destino))
+            if (!Tabuleiro.Peca(origem).MovimentoPossivel(destino))
             {
                 throw new TabuleiroException("Posição de destino inválida");
             }
@@ -181,7 +224,7 @@ namespace ChessGame.TabuleiroChess
 
             foreach (Peca peca in PecasEmJogo(Adversaria(cor)))
             {
-                bool[,] mat = peca.MovimentosPossiveis(); // Verificar
+                bool[,] mat = peca.MovimentosPossiveis();
 
                 if (mat[rei.Posicao.Linha, rei.Posicao.Coluna] == true)
                 {
@@ -199,18 +242,14 @@ namespace ChessGame.TabuleiroChess
 
         private void ColocarPecas()
         {
-            ColocarNovaPeca('a', 1, new Rei(Tabuleiro, Cor.Branca));
             ColocarNovaPeca('c', 1, new Torre(Tabuleiro, Cor.Branca));
-            ColocarNovaPeca('c', 2, new Torre(Tabuleiro, Cor.Branca));
-            ColocarNovaPeca('d', 2, new Torre(Tabuleiro, Cor.Branca));
-            ColocarNovaPeca('e', 2, new Torre(Tabuleiro, Cor.Branca));
+            ColocarNovaPeca('d', 1, new Rei(Tabuleiro, Cor.Branca));
+            ColocarNovaPeca('h', 7, new Torre(Tabuleiro, Cor.Branca));
+           
 
 
-            ColocarNovaPeca('g', 6, new Rei(Tabuleiro, Cor.Preta));
-            ColocarNovaPeca('c', 7, new Torre(Tabuleiro, Cor.Preta));
-            ColocarNovaPeca('e', 8, new Torre(Tabuleiro, Cor.Preta));
-            ColocarNovaPeca('d', 6, new Torre(Tabuleiro, Cor.Preta));
-
+            ColocarNovaPeca('a', 8, new Rei(Tabuleiro, Cor.Preta));
+            ColocarNovaPeca('b', 8, new Torre(Tabuleiro, Cor.Preta));
 
         }
 

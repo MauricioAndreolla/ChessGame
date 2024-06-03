@@ -6,7 +6,8 @@ namespace ChessGame
     public class Tela
     {
 
-        public static void ImprimirPartida(PartidaDeXadrez partida) {
+        public static void ImprimirPartida(PartidaDeXadrez partida)
+        {
             ImprimirTabuleiro(partida.Tabuleiro);
 
             Console.WriteLine();
@@ -15,12 +16,21 @@ namespace ChessGame
 
             Console.WriteLine();
             Console.WriteLine($"Turno: {partida.Turno}");
-            Console.WriteLine($"Aguardando jogada: {partida.JogadorAtual}");
 
-            if (partida.Xeque)
+            if (!partida.Terminada)
             {
-                Console.WriteLine("XEQUE");
+                Console.WriteLine($"Aguardando jogada: {partida.JogadorAtual}");
+
+                if (partida.Xeque)
+                {
+                    Console.WriteLine("XEQUE");
+                }
+            } else
+            {
+                Console.WriteLine("XequeMate");
+                Console.WriteLine("Vencedor " + partida.JogadorAtual);
             }
+
 
         }
 
@@ -43,7 +53,7 @@ namespace ChessGame
         public static void ImprimirConjunto(HashSet<Peca> pecas)
         {
             Console.Write("[");
-            foreach(Peca x in pecas)
+            foreach (Peca x in pecas)
             {
                 Console.Write($"{x} ");
             }
@@ -79,10 +89,11 @@ namespace ChessGame
                 Console.Write(8 - i + " ");
                 for (int j = 0; j < tabuleiro.Colunas; j++)
                 {
-                    if (posicoesPossiveis[i,j] == true)
+                    if (posicoesPossiveis[i, j] == true)
                     {
                         Console.BackgroundColor = fundoNovo;
-                    } else
+                    }
+                    else
                     {
                         Console.BackgroundColor = fundoOriginal;
                     }
