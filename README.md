@@ -4,6 +4,9 @@
 
 > Aplicativo que seria um Jogo de xadrez via console.
 
+![Image Inicial App](https://github.com/MauricioAndreolla/ChessGame/assets/44854911/0fa86097-265d-401c-9d72-f5126837589a)
+
+
 ### 🔨 Tecnologias Utilizadas
 **C#**
 
