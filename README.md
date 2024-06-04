@@ -29,6 +29,6 @@ git clone https://github.com/MauricioAndreolla/ChessGame.git
 
 Após será necessário entrar até o diretório e rodar o comando
 
-`dotnet build no arquivo dll`
+`dotnet build no projeto`
 
 Ou utilizar o próprio Visual Code ou alguma outra IDE para buildar a aplicação.
