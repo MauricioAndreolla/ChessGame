@@ -4,8 +4,11 @@ namespace ChessGame.GameChess
 {
     public class Rei : Peca
     {
-        public Rei(Tabuleiro tabuleiro, Cor cor) : base(tabuleiro, cor)
+        private readonly PartidaDeXadrez _partida;
+
+        public Rei(Tabuleiro tabuleiro, Cor cor, PartidaDeXadrez partida) : base(tabuleiro, cor)
         {
+            _partida = partida;
         }
 
         private bool PodeMover(Posicao pos)
@@ -94,7 +97,50 @@ namespace ChessGame.GameChess
             }
             #endregion
 
+            #region JogadaEspecial Roque Pequeno e Maior
+            if (QtdeMovimentos == 0 && !_partida.Xeque)
+            {
+                Posicao posicaoTorre = new Posicao(Posicao.Linha, Posicao.Coluna + 3);
+
+                if (TesteTorreParaRoque(posicaoTorre))
+                {
+                    Posicao p1 = new Posicao(Posicao.Linha, Posicao.Coluna + 1);
+                    Posicao p2 = new Posicao(Posicao.Linha, Posicao.Coluna + 2);
+
+                    if (Tabuleiro.Peca(p1) == null && Tabuleiro.Peca(p2) == null)
+                    {
+                        posicoes[Posicao.Linha, Posicao.Coluna + 2] = true;
+                    }
+                }
+
+                Posicao posicaoTorre2 = new Posicao(Posicao.Linha, Posicao.Coluna - 4);
+
+                if (TesteTorreParaRoque(posicaoTorre2))
+                {
+                    Posicao p1 = new Posicao(Posicao.Linha, Posicao.Coluna - 1);
+                    Posicao p2 = new Posicao(Posicao.Linha, Posicao.Coluna - 2);
+                    Posicao p3 = new Posicao(Posicao.Linha, Posicao.Coluna - 3);
+
+                    if (Tabuleiro.Peca(p1) == null && Tabuleiro.Peca(p2) == null && Tabuleiro.Peca(p3) == null)
+                    {
+                        posicoes[Posicao.Linha, Posicao.Coluna - 2] = true;
+                    }
+                }
+
+            }
+
+            #endregion
+
+
+
             return posicoes;
+        }
+
+        private bool TesteTorreParaRoque(Posicao posicao)
+        {
+            Peca p = Tabuleiro.Peca(posicao);
+            return p != null && p is Torre && p.Cor == Cor && p.QtdeMovimentos == 0;
+
         }
 
         public override string ToString()
