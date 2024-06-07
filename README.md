@@ -30,8 +30,8 @@ Somente baixar os arquivos manualmente ou cloná-los através do comando abaixo.
 git clone https://github.com/MauricioAndreolla/ChessGame.git
 ```
 
-Após será necessário entrar até o diretório e executar o comando
+Após será necessário entrar até o diretório e executar o comando para compilar o projeto em para seu sistema operacional
 
-`dotnet build`
+`dotnet build ChessGame.sln`
 
 Ou utilizar o próprio Visual Code ou alguma outra IDE para buildar a aplicação de acordo com seu sistema.
